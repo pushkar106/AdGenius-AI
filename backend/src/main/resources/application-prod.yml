@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT:3306}/${MYSQL_DATABASE}?useSSL=true&requireSSL=false&serverTimezone=UTC
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
+    hikari:
+      maximum-pool-size: 20
+  jpa:
+    show-sql: false
+
+server:
+  shutdown: graceful
+
+logging:
+  level:
+    root: WARN
+    com.adgenius: INFO

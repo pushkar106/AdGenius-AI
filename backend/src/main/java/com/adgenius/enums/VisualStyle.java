@@ -1,0 +1,14 @@
+package com.adgenius.enums;
+
+public enum VisualStyle {
+    LUXURY,
+    MINIMALIST,
+    CINEMATIC,
+    STUDIO_PHOTOGRAPHY,
+    LIFESTYLE,
+    ECOMMERCE,
+    FUTURISTIC,
+    RENDER_3D,
+    PREMIUM_COMMERCIAL,
+    SOCIAL_MEDIA_ADVERTISEMENT
+}

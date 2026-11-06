@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: adgenius-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_super_secure_pass}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-adgenius}
+      MYSQL_USER: ${MYSQL_USER:-adgenius}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-change-me-strong-password}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root_super_secure_pass}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - adgenius-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: adgenius-backend
+    restart: on-failure
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-adgenius}
+      MYSQL_USER: ${MYSQL_USER:-adgenius}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-change-me-strong-password}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-very-secure-jwt-secret-key-32chars-minimum!}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-very-secure-refresh-token-secret-32ch!}
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:5173}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:3000}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      REPLICATE_API_TOKEN: ${REPLICATE_API_TOKEN:-}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET:-}
+      AWS_REGION: ${AWS_REGION:-ap-south-1}
+      RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID:-}
+      RAZORPAY_KEY_SECRET: ${RAZORPAY_KEY_SECRET:-}
+      RAZORPAY_WEBHOOK_SECRET: ${RAZORPAY_WEBHOOK_SECRET:-}
+      LOCAL_STORAGE_DIR: /app/data/media
+    volumes:
+      - backend_media:/app/data/media
+    networks:
+      - adgenius-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: adgenius-frontend
+    restart: on-failure
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+    networks:
+      - adgenius-network
+
+volumes:
+  mysql_data:
+    driver: local
+  backend_media:
+    driver: local
+
+networks:
+  adgenius-network:
+    driver: bridge

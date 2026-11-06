@@ -1,0 +1,49 @@
+# Environment and secrets
+.env
+.env.local
+.env.production
+*.pem
+*.p12
+*.jks
+
+# Java / Maven
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+*.class
+*.log
+*.jar
+!maven-wrapper.jar
+hs_err_pid*
+
+# Node
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+npm-debug.log*
+yarn-error.log*
+
+# IDE
+.idea/
+.vscode/
+*.iml
+.project
+.classpath
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local media / runtime
+data/
+uploads/
+*.tmp
+
+# Docker
+mysql-data/
+
+# Coverage
+coverage/
+backend/target/site/
+
+backend/adgenius_backup.sql
